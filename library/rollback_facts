@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # (c) 2013, Raphael Randschau <nicolai86@me.com>
+# (c) 2017, Rémi Jarjat <remi@drakona.fr>
 
 DOCUMENTATION = '''
 ---
@@ -27,10 +28,23 @@ def find_previous_deployment(module):
     else:
         return None
 
+def find_rollbacked_deployment(module):
+    os.chdir(module.params['releases_path'])
+
+    directories = filter(os.path.isdir, os.listdir('.'))
+    directories.sort(key=lambda x: os.path.getctime(x))
+
+    index = directories.index(current_release_path(module))
+    if index > 0:
+        return directories[index]
+    else:
+        return None
+
 def gather_facts(module):
     return {
         'rollback': {
-            'previous_deployment_path': find_previous_deployment(module)
+            'previous_deployment_path': find_previous_deployment(module),
+            'rollbacked_path': find_rollbacked_deployment(module)
         }
     }
 

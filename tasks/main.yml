@@ -3,6 +3,12 @@
     current_path: "{{ current_path }}"
     releases_path: "{{ releases_path }}"
 
+- name: Remove rollbacked folder and files
+  file:
+    state: absent
+    path: "{{ releases_path }}/{{ rollback.rollbacked_path }}"
+  when: rollback.previous_deployment_path
+
 - name: update symlink to previous version
   file:
     src: "{{ releases_path }}/{{ rollback.previous_deployment_path }}"
